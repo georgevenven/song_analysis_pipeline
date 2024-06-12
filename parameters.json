@@ -1,0 +1,9 @@
+{
+    "sort_songs": "Yes",
+    "SyllableDiscovery": "HDBSCAN",
+    "OperateOnRawAudioFiles": "No",
+    "UseYardenSpec": "Yes",
+    "InputDirectory": "/path/to/input",
+    "OutputDirectory": "/path/to/output"
+  }
+  
