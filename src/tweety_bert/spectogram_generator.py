@@ -216,6 +216,7 @@ class WavtoSpec:
         segments_to_process = []
         if self.use_csv and song_name in song_info:
             song_segments = song_info[song_name]
+            print(song_segments)
             for start_ms, end_ms in song_segments:
                 start_sample = int(start_ms * samplerate / 1000)
                 end_sample = int(end_ms * samplerate / 1000)
@@ -411,22 +412,3 @@ def copy_yarden_data(src_dirs, dst_dir):
         # Copy the .npz file to the destination directory
         shutil.copy2(src_file_path, dst_file_path)
         print(f"Copied {file} to {dst_dir}")
-
-if __name__ == '__main__':
-    wav_to_spec = WavtoSpec('/media/george-vengrovski/disk2/canary/sorted_2/USA5337', '/media/george-vengrovski/disk2/canary/5377_specs', csv_file_dir="/media/george-vengrovski/disk2/canary/sorted_2/database.csv")
-    wav_to_spec.process_directory()
-
-
-    # # Usage:
-    # csv_dir only populated if u want to use it 
-
-    # # # wav_to_spec.analyze_dataset()
-    # wav_to_spec.plot_grid_of_spectrograms()
-
-
-
-    # param_dict = {
-    #     'NFFT': [ 2048], 
-    #     'step_size': [1536] 
-    # }
-    # wav_to_spec.compare_spectrogram_permutations(param_dict)

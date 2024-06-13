@@ -5,7 +5,7 @@ import matplotlib.colors as mcolors
 import re 
 from collections import Counter
 import umap
-from data_class import SongDataSet_Image, CollateFunction
+from src.tweety_bert.data_class import SongDataSet_Image, CollateFunction
 from torch.utils.data import DataLoader
 import glasbey
 from sklearn.metrics.cluster import completeness_score

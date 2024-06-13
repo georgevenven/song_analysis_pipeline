@@ -1,8 +1,8 @@
 # convert wav files to spectograms 
-from model import TweetyNet
-from utils import load_model
-from spectogram_generator import WavtoSpec
-import post_processing 
+from src.tweety_net_detector.model import TweetyNet
+from src.tweety_net_detector.utils import load_model
+from src.tweety_net_detector.spectogram_generator import WavtoSpec
+import src.tweety_net_detector.post_processing as post_processing 
 from tqdm import tqdm
 import tempfile
 import os 
@@ -220,8 +220,3 @@ class Inference():
 
         # Visualize the spectrogram without saving the image
         post_processing.plot_spectrogram_with_processed_song(directory=None, file_name=song_name, spectrogram=spectrogram, smoothed_song=smoothed_song, processed_song=processed_song)
-
-
-sorter = Inference(input_path = "/media/george-vengrovski/Extreme SSD1/20240520_sort_birds_to_perfuse", output_path = "/media/george-vengrovski/Extreme SSD1/20240520_sort_birds_to_perfuse", plot_spec_results=False, model_path="/home/george-vengrovski/Documents/projects/tweety_net_song_detector/files/sorter-1")
-sorter.sort_all_songs()
-# sorter.visualize_single_spec("USA5325_45227.25841726_10_28_7_10_41")

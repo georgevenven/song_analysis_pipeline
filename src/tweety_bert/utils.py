@@ -1,6 +1,6 @@
 import torch 
 import json
-from model import TweetyBERT
+from src.tweety_bert.model import TweetyBERT
 
 def load_weights(dir, model):
     """
