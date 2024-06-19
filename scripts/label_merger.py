@@ -33,7 +33,23 @@ def process_labels(npz_path, combine, noise):
     # Process noise
     for label in noise:
         hdb_scan_labels[hdb_scan_labels == label] = -1
-    
-    # Save the original and modified labels along with other data back to the npz file
-    np.savez(npz_path, hdbscan_labels=original_hdb_scan_labels, ground_truth_labels=hdb_scan_labels, **other_data)
 
+    # Increment all labels to ensure no negative labels
+    hdb_scan_labels += 1
+
+    # Remap labels to ensure continuity
+    unique_labels = np.unique(hdb_scan_labels)
+    label_mapping = {old_label: new_label for new_label, old_label in enumerate(unique_labels)}
+    hdb_scan_labels = np.vectorize(label_mapping.get)(hdb_scan_labels)
+
+    # Ensure 'labels' key is not duplicated
+    if 'labels' in other_data:
+        del other_data['labels']
+
+    # Save the original and modified labels along with other data back to the npz file
+    np.savez(npz_path, hdbscan_labels=original_hdb_scan_labels, labels=hdb_scan_labels, **other_data)
+    num_classes = len(np.unique(hdb_scan_labels))
+
+    print(np.unique(hdb_scan_labels))
+
+    return num_classes

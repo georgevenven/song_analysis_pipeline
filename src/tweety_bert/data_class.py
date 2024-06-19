@@ -11,11 +11,12 @@ import matplotlib.pyplot as plt
 import logging
 
 class SongDataSet_Image(Dataset):
-    def __init__(self, file_dir, num_classes=40, infinite_loader=True, segment_length=1000):
+    def __init__(self, file_dir, num_classes=100, infinite_loader=True, segment_length=1000, decoder=False):
         self.file_paths = [os.path.join(file_dir, file) for file in os.listdir(file_dir)]
         self.num_classes = num_classes
         self.infinite_loader = infinite_loader
         self.segment_length = segment_length
+        self.decoder = decoder
 
     def __getitem__(self, idx):
         if self.infinite_loader:
@@ -28,12 +29,16 @@ class SongDataSet_Image(Dataset):
             data = np.load(file_path, allow_pickle=True)
             spectogram = data['s']
 
-            spectogram = spectogram[20:216]
-            # Calculate mean and standard deviation of the spectrogram
             spec_mean = np.mean(spectogram)
             spec_std = np.std(spectogram)
             # Z-score the spectrogram
             spectogram = (spectogram - spec_mean) / spec_std
+
+            if self.decoder == False:
+                spectogram = spectogram[20:216]
+                # Calculate mean and standard deviation of the spectrogram
+            else:
+                spectogram = spectogram.T
 
             # Process labels
             ground_truth_labels = np.array(data['labels'], dtype=int)

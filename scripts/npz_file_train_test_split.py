@@ -9,40 +9,25 @@ def split_npz_into_chunks(npz_file, chunk_size, train_folder, test_folder, train
     # Load the npz file
     data = np.load(npz_file, allow_pickle=True)
     
-    # Get the temporal dimension size from one of the arrays
-    time_dim = None
-    for key in data.files:
-        if data[key].ndim > 0:
-            time_dim = data[key].shape[-1]
-            break
+    length = data["hdbscan_labels"].shape[0]
+    num_chunks = length // chunk_size
+    for i in range(0, num_chunks):
+        # if random chance above .8 than test, else train
+        if np.random.random() < train_ratio:
+            # go through all the keys, save the chunk to the train folder
+            chunk_data = {}
+            for key in data.files:
+                if data[key].ndim == 0:
+                    chunk_data[key] = data[key]
+                else:
+                    chunk_data[key] = data[key][i*chunk_size:(i+1)*chunk_size]
+            np.savez(os.path.join(train_folder, f"chunk_{i}.npz"), **chunk_data)
+        else:
+            chunk_data = {}
+            for key in data.files:
+                if data[key].ndim == 0:
+                    chunk_data[key] = data[key]
+                else:
+                    chunk_data[key] = data[key][i*chunk_size:(i+1)*chunk_size]
 
-    if time_dim is None:
-        raise ValueError("No valid temporal dimension found in the npz file.")
-
-    # Calculate the number of chunks
-    num_chunks = time_dim // chunk_size
-
-    # Split the data into chunks
-    chunks = {key: np.array_split(data[key], num_chunks, axis=-1) for key in data.files}
-
-    # Shuffle the chunks
-    indices = np.arange(num_chunks)
-    np.random.shuffle(indices)
-
-    # Calculate the number of train chunks
-    train_size = int(num_chunks * train_ratio)
-
-    # Split the indices into train and test
-    train_indices = indices[:train_size]
-    test_indices = indices[train_size:]
-
-    # Save the chunks into train and test folders
-    for i, idx in enumerate(train_indices):
-        chunk_data = {key: chunks[key][idx] for key in data.files}
-        np.savez(os.path.join(train_folder, f"chunk_{i}.npz"), **chunk_data)
-
-    for i, idx in enumerate(test_indices):
-        chunk_data = {key: chunks[key][idx] for key in data.files}
-        np.savez(os.path.join(test_folder, f"chunk_{i}.npz"), **chunk_data)
-
-
+            np.savez(os.path.join(test_folder, f"chunk_{i}.npz"), **chunk_data)
