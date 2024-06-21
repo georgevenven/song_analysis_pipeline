@@ -54,9 +54,4 @@ def plot_longest_segments_by_label(file_path, output_file_path):
     plt.savefig(output_file_path)
     plt.show()
 
-# File paths
-file_path = "/home/george-vengrovski/Documents/projects/song_analysis_pipeline/files/labels_HDBSCAN_Classification.npz"
-output_file_path = "spectrogram_segments.png"
 
-# Call the function
-plot_longest_segments_by_label(file_path, output_file_path)
