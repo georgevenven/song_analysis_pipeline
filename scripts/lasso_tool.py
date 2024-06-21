@@ -37,19 +37,24 @@ def on_key(event):
                 break
         update_scatter_colors()
 
-def on_close(event):
-    global data  # Ensure data is accessible in this function
+def on_close(event, output_file_path):  # Add output_file_path as a parameter
+    global data  # Ensure these are accessible in this function
     # Create a new labels array based on the lasso selections
-    new_labels = np.array(data['hdbscan_labels'])  # Start with a copy of the original labels
-    for color, indices in color_dict.items():
-        new_labels[indices] = np.unique(new_labels[indices])[0]  # Assign a unique label to each selected group
+    new_labels = np.zeros_like(data['hdbscan_labels'])
+    unique_colors = list(color_dict.keys())  # Get all unique colors
+    color_to_label = {color: idx + 1 for idx, color in enumerate(unique_colors)}  # Map each color to a unique integer
 
-    # Save the modified labels back to the npz file
-    np.savez(output_file_path, **data, hdbscan_labels=new_labels)
+    for color, indices in color_dict.items():
+        new_labels[indices] = color_to_label[color]  # Assign a unique label to each selected group
+    
+    # Ensure that 'hdbscan_labels' is not duplicated in 'data'
+    data_modified = {key: value for key, value in data.items() if key != 'hdbscan_labels'}    
+
+    np.savez(output_file_path, **data_modified, hdbscan_labels=new_labels)
     print("Modified labels saved to:", output_file_path)
 
 def lasso_tool(file_path, output_file_path):
-    global data  # Declare data as global to access it in on_close
+    global data  # Only declare data as global
     # Load data from the .npz file
     data = np.load(file_path, allow_pickle=True)
     embedding = data["embedding_outputs"]
@@ -65,6 +70,6 @@ def lasso_tool(file_path, output_file_path):
     color_cycle = itertools.cycle([cm.tab20(i/20) for i in range(20)] + [cm.tab20b(i/20) for i in range(20)] + [cm.tab20c(i/20) for i in range(20)] + [cm.Paired(i/12) for i in range(12)] + [cm.Pastel1(i/9) for i in range(9)] + [cm.Pastel2(i/8) for i in range(8)])
     lasso = LassoSelector(ax, onselect)
     fig.canvas.mpl_connect('key_press_event', on_key)
-    fig.canvas.mpl_connect('close_event', on_close)  # Connect the close event to the on_close function
+    fig.canvas.mpl_connect('close_event', lambda event: on_close(event, output_file_path))  # Connect the close event to the on_close function with output_file_path
 
     plt.show()

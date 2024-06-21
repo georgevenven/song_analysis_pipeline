@@ -32,7 +32,7 @@ class WavtoSpec:
     def process_file(instance, file_path, song_info):
         instance.convert_to_spectrogram(file_path, song_info)
 
-    def convert_to_spectrogram(self, file_path, song_info, min_length_ms=1000):
+    def convert_to_spectrogram(self, file_path, song_info, min_length_ms=1025, min_timebins=250):
         try:
             with sf.SoundFile(file_path, 'r') as wav_file:
                 samplerate = wav_file.samplerate
@@ -53,7 +53,6 @@ class WavtoSpec:
             overlap_samples = NFFT - step_size
             window = windows.gaussian(NFFT, std=NFFT/8)
 
-            # find a better way than this, highly inelegant 
             song_name = '.'.join(os.path.basename(file_path).split('.')[0:-1])
 
             segments_to_process = self.get_segments_to_process(song_name=song_name, song_info=song_info, samplerate=samplerate)
@@ -68,11 +67,13 @@ class WavtoSpec:
                 Sxx_log_clipped = np.clip(Sxx_log, a_min=-2, a_max=None)
                 Sxx_log_normalized = (Sxx_log_clipped - np.min(Sxx_log_clipped)) / (np.max(Sxx_log_clipped) - np.min(Sxx_log_clipped))
 
-                spec_filename = os.path.splitext(os.path.basename(file_path))[0]
-                spec_file_path = os.path.join(self.dst_dir, spec_filename + '_' + str(start_sample) + '.npz')
-                np.savez_compressed(spec_file_path, s=Sxx_log_normalized)
-
-                print(f"Spectrogram saved to {spec_file_path}")
+                if t.size >= min_timebins:
+                    spec_filename = os.path.splitext(os.path.basename(file_path))[0]
+                    spec_file_path = os.path.join(self.dst_dir, spec_filename + '_' + str(start_sample) + '.npz')
+                    np.savez_compressed(spec_file_path, s=Sxx_log_normalized)
+                    print(f"Spectrogram saved to {spec_file_path}")
+                else:
+                    print(f"Spectrogram for {file_path} at segment {start_sample}-{end_sample} has less than {min_timebins} timebins and will not be saved.")
 
         except Exception as e:
             print(f"Error processing {file_path}: {e}")

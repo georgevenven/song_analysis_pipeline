@@ -57,9 +57,9 @@ os.makedirs(test_dir, exist_ok=True)
 split_dataset(generated_sorted_specs_directory, 0.8, train_dir, test_dir, move_files=False)
 
 # # load tweety bert and train 
-config_path = "/home/george-vengrovski/Documents/projects/song_analysis_pipeline/models/tweety_bert/default_config/config.json"
+config_path = "models/tweety_bert/default_config/config.json"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-experiment_runner = ExperimentRunner(device="cuda", base_save_dir=parameters["temp_path"]+"/"+parameters["bird_id"]+"pretrain_run")
+experiment_runner = ExperimentRunner(device="cuda", base_save_dir=parameters["temp_path"]+"/"+parameters["bird_id"])
 
 # load config json 
 with open(config_path, 'r') as file:
@@ -71,13 +71,12 @@ config["test_dir"] = test_dir
 
 model = experiment_runner.run_experiment(config, "")
 
-#TweetyBERT 128 OG Model 
 plot_umap_projection(
 model=model, 
 device=device, 
 data_dir=generated_sorted_specs_directory,
 samples=parameters["umap_params"]["samples"], 
-file_path=parameters["umap_params"]["file_path"], 
+file_path="files", 
 layer_index=parameters["umap_params"]["layer_index"], 
 dict_key=parameters["umap_params"]["dict_key"], 
 context=parameters["umap_params"]["context"], 

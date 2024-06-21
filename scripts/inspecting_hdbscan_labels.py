@@ -11,7 +11,7 @@ def plot_longest_segments_by_label(file_path, output_file_path):
     hdbscan_colors = data["hdbscan_colors"].item()  # Load HDBSCAN colors
 
     unique_labels = np.unique(labels)
-    max_segments = 4  # Maximum number of segments to display per label
+    max_segments = 2  # Maximum number of segments to display per label
 
     # Create a dictionary to store the longest segments for each label
     longest_segments = {label: [] for label in unique_labels}

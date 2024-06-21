@@ -24,16 +24,21 @@ print(f"Number of classes: {num_classes}")
 with open('parameters.json', 'r') as f:
     parameters = json.load(f)
 
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load TweetyBERT model
-weights_path = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/testingpretrain_run/5377_test_run/saved_weights/model_step_999.pth"
-config_path = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/testingpretrain_run/5377_test_run/config.json"
+weights_dir = f"{parameters['temp_path']}/{parameters['bird_id']}/{config['experiment_name']}/saved_weights"
+weights_path = max([os.path.join(weights_dir, f) for f in os.listdir(weights_dir)], key=os.path.getsize)
+config_path = "models/tweety_bert/default_config/config.json"
 tweety_bert_model = load_model(config_path, weights_path)
 
 # split into train / test 
-train_folder = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/linear_classifier_train"
-test_folder = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/linear_classifier_test"
+train_folder = parameters["temp_path"] + "/linear_classifier_train"
+test_folder = parameters["temp_path"] + "/linear_classifier_test"
 split_npz_into_chunks(npz_file, chunk_size=1000, train_folder=train_folder, test_folder=test_folder)
 
 # Train Non-Linear Classifier
@@ -65,26 +70,22 @@ class_frame_error_rates, total_frame_error_rate = evaluator.validate_model_multi
 results_folder_name = os.path.basename(test_folder)
 
 # Save the evaluation results
-results_dir = os.path.join("/home/george-vengrovski/Documents/projects/song_analysis_pipeline/temp", results_folder_name)  # Modified to save into the relative path /results/{cv_dirs}
+results_dir = os.path.join(parameters["temp_path"], results_folder_name)  # Modified to save into the relative path /results/{cv_dirs}
 os.makedirs(results_dir, exist_ok=True)
 evaluator.save_results(class_frame_error_rates, total_frame_error_rate, results_dir)
 
 # Save Linear Decoder + Its Parameters 
-save_path = os.path.join("output/decoder_classifier", "linear_decoder.pth")
+save_path = os.path.join(parameters["output_path"], "decoder_classifier", "linear_decoder.pth")
 os.makedirs(os.path.dirname(save_path), exist_ok=True)
 torch.save(classifier_model.state_dict(), save_path)
 
 # save a copy of the tweetybert config json and weights in the same folder 
-shutil.copy(config_path, os.path.join("output/decoder_classifier", "config.json"))
-shutil.copy(weights_path, os.path.join("output/decoder_classifier", "weights.pth"))
+shutil.copy(config_path, os.path.join(parameters["output_path"], "decoder_classifier", "config.json"))
+shutil.copy(weights_path, os.path.join(parameters["output_path"], "decoder_classifier", "weights.pth"))
 
 output_path = os.path.join(parameters["output_path"], "syllable_annotations_output")
 model = Inference(input_path=parameters["input_path"], output_path=output_path, plot_spec_results=True, model=classifier_model, sorted_songs_path="/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/database.csv", threshold=.5, min_length=500, pad_song=50)
 model.classify_all_songs()
-
-
-# # Use it to analyze whole dataset 
-# import shutil
 
 # # delete temp folder contents
 # temp_folder_path = parameters["temp_path"]

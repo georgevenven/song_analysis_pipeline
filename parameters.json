@@ -7,7 +7,6 @@
     "temp_path": "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/",
     "output_path": "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/output/",
     "umap_params": {
-        "data_dir": "/media/george-vengrovski/disk1/5377_test",
         "samples": 5e4,
         "file_path": "/files/category_colors.pkl",
         "layer_index": -2,

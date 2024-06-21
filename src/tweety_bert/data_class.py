@@ -29,10 +29,16 @@ class SongDataSet_Image(Dataset):
             data = np.load(file_path, allow_pickle=True)
             spectogram = data['s']
 
-            spec_mean = np.mean(spectogram)
-            spec_std = np.std(spectogram)
-            # Z-score the spectrogram
-            spectogram = (spectogram - spec_mean) / spec_std
+            # if file contains any NaN, replace with 0 
+            spectogram = np.nan_to_num(spectogram, nan=0)
+
+            # Calculate mean and standard deviation only for non-zero (non-NaN replaced) elements
+            valid_elements = spectogram[spectogram != 0]
+            spec_mean = np.mean(valid_elements) if valid_elements.size > 0 else 0
+            spec_std = np.std(valid_elements) if valid_elements.size > 0 else 1
+
+            # Z-score the spectrogram, avoiding division by zero
+            spectogram = (spectogram - spec_mean) / spec_std if spec_std > 0 else spectogram - spec_mean
 
             if self.decoder == False:
                 spectogram = spectogram[20:216]
