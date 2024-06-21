@@ -5,6 +5,7 @@ from scripts.label_merger import read_label_file, process_labels
 from src.tweety_bert.linear_probe import LinearProbeModel, LinearProbeTrainer, ModelEvaluator
 from src.tweety_bert.utils import load_model
 from src.tweety_bert.data_class import SongDataSet_Image, CollateFunction
+from src.syllable_classifier.classify_songs import Inference 
 from torch.utils.data import DataLoader
 import torch
 import json 
@@ -67,6 +68,23 @@ results_dir = os.path.join("/home/george-vengrovski/Documents/projects/song_anal
 os.makedirs(results_dir, exist_ok=True)
 evaluator.save_results(class_frame_error_rates, total_frame_error_rate, results_dir)
 
+# Save Linear Decoder + Its Parameters 
+save_path = os.path.join("output/decoder_classifier", "linear_decoder.pth")
+os.makedirs(os.path.dirname(save_path), exist_ok=True)
+torch.save(classifier_model.state_dict(), save_path)
+
+# save a copy of the tweetybert config json and weights in the same folder 
+shutil.copy(config_path, os.path.join("output/decoder_classifier", "config.json"))
+shutil.copy(weights_path, os.path.join("output/decoder_classifier", "weights.pth"))
+
+# run inference, output csv to the /output folder
+# if sort songs is false, than we assume that the files that have been provided have already been sorted 
+
+output_path = os.path.join(parameters["output_path"], "syllable_annotations_output")
+if parameters["sort_songs"] == True:
+    Inference(input_path=parameters["input_path"], output_path=output_path, plot_spec_results=True, model=model, sorted_songs_path="/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/database.csv", threshold=.5, min_length=500, pad_song=50)
+else:
+    pass
 
 
 # # Use it to analyze whole dataset 

@@ -42,7 +42,7 @@ generated_sorted_specs_directory = os.path.join(parameters["temp_path"], "sorted
 if not os.path.exists(generated_sorted_specs_directory):
     os.makedirs(generated_sorted_specs_directory)
 
-wav_to_spec = WavtoSpec(parameters["input_path"], generated_sorted_specs_directory, csv_file_dir="/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/database.csv")
+wav_to_spec = WavtoSpec(parameters["input_path"], generated_sorted_specs_directory, csv_file_dir=parameters["temp_path"]+"/database.csv")
 wav_to_spec.process_directory()
 
 # # train test split

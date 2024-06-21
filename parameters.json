@@ -1,6 +1,6 @@
 {
     "bird_id": "testing",
-    "sort_songs": "Yes",
+    "sort_songs": "True",
     "syllable_discovery": "HDBSCAN",
     "TweetyBERT_default_paramters": "Yes", 
     "input_path": "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/bird",
@@ -8,7 +8,7 @@
     "output_path": "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/output/",
     "umap_params": {
         "data_dir": "/media/george-vengrovski/disk1/5377_test",
-        "samples": 5e4,
+        "samples": 5e1,
         "file_path": "/files/category_colors.pkl",
         "layer_index": -2,
         "dict_key": "attention_output",

@@ -36,12 +36,12 @@ class SongDataSet_Image(Dataset):
 
             if self.decoder == False:
                 spectogram = spectogram[20:216]
+                ground_truth_labels = np.zeros(spectogram.shape[1])
                 # Calculate mean and standard deviation of the spectrogram
             else:
                 spectogram = spectogram.T
-
+                ground_truth_labels = np.array(data['labels'], dtype=int)
             # Process labels
-            ground_truth_labels = np.array(data['labels'], dtype=int)
 
             ground_truth_labels = torch.from_numpy(ground_truth_labels).long().squeeze(0)
             spectogram = torch.from_numpy(spectogram).float().permute(1, 0)
