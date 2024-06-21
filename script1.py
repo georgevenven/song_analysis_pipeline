@@ -85,12 +85,3 @@ raw_spectogram=parameters["umap_params"]["raw_spectogram"],
 save_dict_for_analysis = parameters["umap_params"]["save_dict_for_analysis"],
 save_name=parameters["umap_params"]["save_name"],
 )
-
-# Join Clusters
-# File paths
-file_path = "/home/george-vengrovski/Documents/projects/song_analysis_pipeline/files/labels_HDBSCAN_Classification.npz"
-output_file_path = "spectrogram_segments.png"
-
-# Call the function
-plot_longest_segments_by_label(file_path, output_file_path)
-print("10 Examples of each cluster has been saved to /temp/joined_clusters, please inspect and merge if needed")

@@ -1,7 +1,7 @@
 {
     "bird_id": "testing",
     "sort_songs": "True",
-    "syllable_discovery": "HDBSCAN",
+    "syllable_discovery": "lasso",
     "TweetyBERT_default_paramters": "Yes", 
     "input_path": "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/bird",
     "temp_path": "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/",

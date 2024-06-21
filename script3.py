@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 import torch
 import json 
 import os
+import shutil
 
 input_file = 'merge_combine.txt'  # Path to the input file
 npz_file = 'files/labels_HDBSCAN_Classification.npz'  # Path to the npz file
@@ -26,7 +27,7 @@ with open('parameters.json', 'r') as f:
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load TweetyBERT model
-weights_path = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/testingpretrain_run/5377_test_run/saved_weights/model_step_1499.pth"
+weights_path = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/testingpretrain_run/5377_test_run/saved_weights/model_step_999.pth"
 config_path = "/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/testingpretrain_run/5377_test_run/config.json"
 tweety_bert_model = load_model(config_path, weights_path)
 
@@ -77,14 +78,9 @@ torch.save(classifier_model.state_dict(), save_path)
 shutil.copy(config_path, os.path.join("output/decoder_classifier", "config.json"))
 shutil.copy(weights_path, os.path.join("output/decoder_classifier", "weights.pth"))
 
-# run inference, output csv to the /output folder
-# if sort songs is false, than we assume that the files that have been provided have already been sorted 
-
 output_path = os.path.join(parameters["output_path"], "syllable_annotations_output")
-if parameters["sort_songs"] == True:
-    Inference(input_path=parameters["input_path"], output_path=output_path, plot_spec_results=True, model=model, sorted_songs_path="/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/database.csv", threshold=.5, min_length=500, pad_song=50)
-else:
-    pass
+model = Inference(input_path=parameters["input_path"], output_path=output_path, plot_spec_results=True, model=classifier_model, sorted_songs_path="/media/george-vengrovski/disk1/song_analysis_pipeline_testing_delete_when_works/temp/database.csv", threshold=.5, min_length=500, pad_song=50)
+model.classify_all_songs()
 
 
 # # Use it to analyze whole dataset 
